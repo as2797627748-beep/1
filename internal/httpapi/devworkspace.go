@@ -202,7 +202,8 @@ func (d *devWorkspace) exec(command string, cwd string, background bool, runID s
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
-	cmd := exec.CommandContext(ctx, "zsh", "-lc", command)
+	shell, shellArgs := shellCommand(command)
+	cmd := exec.CommandContext(ctx, shell, shellArgs...)
 	cmd.Dir = workingDir
 	output, err := cmd.CombinedOutput()
 	status := "completed"
@@ -232,7 +233,8 @@ func (d *devWorkspace) exec(command string, cwd string, background bool, runID s
 func (d *devWorkspace) startBackground(command string, workingDir string, normalized string, runID string) (map[string]any, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	id := fmt.Sprintf("term-%06d", atomic.AddUint64(&d.counter, 1))
-	cmd := exec.CommandContext(ctx, "zsh", "-lc", command)
+	shell, shellArgs := shellCommand(command)
+	cmd := exec.CommandContext(ctx, shell, shellArgs...)
 	cmd.Dir = workingDir
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -372,6 +374,13 @@ func (d *devWorkspace) kill(id string) (map[string]any, error) {
 	session.exitCode = 130
 	session.mu.Unlock()
 	return d.sessionSnapshot(session), nil
+}
+
+func shellCommand(command string) (string, []string) {
+	if _, err := exec.LookPath("zsh"); err == nil {
+		return "zsh", []string{"-lc", command}
+	}
+	return "sh", []string{"-c", command}
 }
 
 func newPreviewProxy(port string) (*httputil.ReverseProxy, error) {
