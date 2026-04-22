@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>繁星</title>
+    <link rel="stylesheet" href="/app.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <span class="brand-orbit orbit-a"></span>
+            <span class="brand-orbit orbit-b"></span>
+            <span class="brand-core"></span>
+          </div>
+          <div>
+            <strong>繁星</strong>
+            <p>触达底层重塑秩序</p>
+          </div>
+        </div>
+        <nav class="menu">
+          <button class="menu-item active" data-view="dashboard">首页</button>
+          <button class="menu-item" data-view="runs">任务列表</button>
+          <button class="menu-item" data-view="models">模型总览</button>
+          <button class="menu-item" data-view="templates">方案库</button>
+          <button class="menu-item" data-view="control">系统设置</button>
+        </nav>
+        <div class="sidebar-card">
+          <span>稳定交付</span>
+          <strong>稳定部署</strong>
+          <p>自动识别可用能力，把复杂部署收进更轻盈的确认过程</p>
+        </div>
+      </aside>
+
+      <div class="theme-toggle-float">
+        <button type="button" id="theme-toggle" class="theme-toggle" aria-label="切换界面风格">
+          <span class="theme-toggle-icon theme-toggle-icon-night" aria-hidden="true">☾</span>
+          <span class="theme-toggle-track" aria-hidden="true">
+            <span class="theme-toggle-thumb"></span>
+          </span>
+          <span class="theme-toggle-icon theme-toggle-icon-day" aria-hidden="true">☼</span>
+        </button>
+      </div>
+
+      <main class="workspace">
+        <section class="hero panel">
+          <div class="hero-copy">
+            <span class="eyebrow">FANSTARS</span>
+            <h1>繁星，以逻辑微光，将混乱路径导向清晰终点。</h1>
+            <p>从愿景破土，到实战盛放，都保持深思熟虑。</p>
+            <div class="hero-metrics" id="hero-metrics">
+              <div class="metric-card">
+                <strong>--</strong>
+                <span>已接入平台</span>
+              </div>
+              <div class="metric-card">
+                <strong>--</strong>
+                <span>可用模型</span>
+              </div>
+              <div class="metric-card">
+                <strong>--</strong>
+                <span>任务方案</span>
+              </div>
+            </div>
+          </div>
+          <div class="hero-side">
+            <div class="hero-badges">
+            <span>模型接入</span>
+            <span>任务推进</span>
+            <span>验证交付</span>
+            <span>稳定部署</span>
+            <span>日常管理</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-grid">
+          <div class="main-column">
+            <section class="panel" id="dashboard-view">
+              <div class="panel-header">
+                 <h2>新建任务</h2>
+                 <p>输入一句话目标后，繁星会先识别任务类型、可用模型、推荐流程、验证链路和资源风险。</p>
+              </div>
+              <form id="run-form" class="form-grid">
+                <label>
+                  <span>任务标题</span>
+                  <input name="title" placeholder="例如：构建一套可自运维的自治平台" required />
+                </label>
+                <label class="span-2">
+                  <span>目标描述</span>
+                  <textarea name="goal" rows="5" placeholder="描述您的目标、限制、风格、交付标准与部署期望" required></textarea>
+                </label>
+                <label>
+                  <span>模板</span>
+                  <select name="templateId" id="template-select"></select>
+                </label>
+                <div class="span-2">
+                  <div class="panel-subtle compact-toolbar" id="recent-templates">最近使用的模板会保留在这里，方便直接回填到创建区。</div>
+                </div>
+                <label>
+                  <span>任务阶段</span>
+                  <select name="stages" id="stages-select" multiple></select>
+                </label>
+                <label>
+                  <span>自动修复</span>
+                  <input type="checkbox" name="autoRepairEnabled" checked />
+                </label>
+                <label>
+                  <span>修复强度</span>
+                  <select name="autoRepairMode" id="auto-repair-mode">
+                    <option value="lite">轻量</option>
+                    <option value="standard" selected>标准</option>
+                    <option value="aggressive">积极</option>
+                  </select>
+                </label>
+                <label>
+                  <span>稳定部署</span>
+                  <input type="checkbox" name="remoteDeployEnabled" />
+                </label>
+                <label>
+                  <span>测试模式</span>
+                  <select name="testMode" id="test-mode-select">
+                    <option value="light">轻量测试</option>
+                    <option value="template" selected>模板测试</option>
+                    <option value="smoke">冒烟测试</option>
+                    <option value="full">全量测试</option>
+                  </select>
+                </label>
+                <label class="span-2">
+                  <span>工具组合</span>
+                  <div class="chip-row" id="tool-chips"></div>
+                </label>
+                <div class="span-2">
+                  <div class="panel-subtle compact-toolbar">
+                    <div class="list-row split-row">
+                      <strong>测试项选择</strong>
+                      <div class="actions compact-actions">
+                        <button type="button" id="select-all-tests" class="ghost-button">全选</button>
+                        <button type="button" id="select-recommended-tests" class="ghost-button">推荐</button>
+                      </div>
+                    </div>
+                    <div id="test-chips" class="chip-row"></div>
+                  </div>
+                </div>
+                <div class="span-2">
+                  <div class="panel-header compact">
+                    <h2>工具方案选择</h2>
+                    <p>优先按本地优先和同类能力整理更合适的工具组合，再同步到底层工具开关。</p>
+                  </div>
+                  <div id="atomic-bundles" class="stack-list"></div>
+                </div>
+                <div id="atomic-tool-preview" class="panel-subtle runtime-policy-hint span-2">正在根据阶段、工具和机器情况整理推荐方案。</div>
+                <div id="runtime-policy-hint" class="panel-subtle runtime-policy-hint span-2">正在根据当前机器配置整理默认使用建议。</div>
+                <div class="actions span-2">
+                  <button type="button" id="analyze-run">智能预演</button>
+                  <button type="submit" class="primary">启动任务</button>
+                  <button type="button" id="refresh-runs">同步状态</button>
+                </div>
+              </form>
+               <div id="analysis-preview" class="analysis-preview detail-empty">输入一句话目标后，可先看到一份自动整理的执行建议。</div>
+            </section>
+
+            <section class="panel" id="capabilities-view">
+              <div class="panel-header">
+                <h2>能力总览</h2>
+                <p>把模型、工作流、工具与验证整理成一个统一入口，尽量保留每一类里最值得调用的能力。</p>
+              </div>
+              <div id="capability-atlas" class="detail-empty">正在整理能力总览。</div>
+            </section>
+
+            <section class="panel hidden" id="runs-view">
+              <div class="panel-header">
+                <h2>任务列表</h2>
+                <p>以清晰时间序列展示每一项任务的推进、停驻与恢复。</p>
+              </div>
+              <div id="runs-list" class="stack-list"></div>
+            </section>
+
+            <section class="panel hidden" id="models-view">
+              <div class="panel-header">
+                <h2>模型总览</h2>
+                <p>把国内外主流与小众模型统一放进一个可比较、可接入、可自动识别接入状态的选择空间。官网按钮只保留在这里。</p>
+              </div>
+              <div class="model-toolbar panel-subtle">
+                <label>
+                  <span>搜索模型</span>
+                  <input id="model-search" placeholder="搜索模型名、平台或标签" />
+                </label>
+                <label>
+                  <span>平台</span>
+                  <select id="model-provider-filter">
+                    <option value="all">全部平台</option>
+                  </select>
+                </label>
+                <label>
+                  <span>区域</span>
+                  <select id="model-region-filter">
+                    <option value="all">全部区域</option>
+                    <option value="global">海外</option>
+                    <option value="domestic">国内</option>
+                  </select>
+                </label>
+                <label>
+                  <span>接入状态</span>
+                  <select id="model-readiness-filter">
+                    <option value="all">全部状态</option>
+                    <option value="ready">已完成接入识别</option>
+                    <option value="missing">待接入</option>
+                  </select>
+                </label>
+              </div>
+              <div id="model-selector-summary" class="selector-summary"></div>
+              <div id="models-list" class="stack-list"></div>
+            </section>
+
+            <section class="panel hidden" id="templates-view">
+              <div class="panel-header">
+                <h2>方案库</h2>
+                <p>沉淀流程、工具组合与交付风格，形成可复用的高阶方案。</p>
+              </div>
+              <div id="templates-list" class="stack-list"></div>
+            </section>
+
+            <section class="panel hidden" id="control-view">
+              <div class="panel-header">
+                <h2>系统设置</h2>
+                <p>尽量通过界面完成配置、本地模型库管理、系统体检、建议生成与日常维护。</p>
+              </div>
+              <div id="workflow-options" class="stack-list"></div>
+              <div id="feature-toggles" class="stack-list"></div>
+              <div class="panel-header compact">
+                    <h2>能力注册表</h2>
+                    <p>按能力而不是按工具堆叠管理入口。每类能力保留首选实现与备用实现，并支持单独调用。</p>
+              </div>
+              <div id="atomic-tools" class="stack-list"></div>
+              <div class="panel-header compact">
+                <h2>最近单独调用</h2>
+              </div>
+              <div id="tool-invocations" class="stack-list"></div>
+              <div class="panel-header compact">
+                <h2>本地模型库</h2>
+                <p>与在线模型总览完全分开。默认关闭，按需通过界面完成下载配置、启用、停用与移除。</p>
+              </div>
+              <div class="model-toolbar panel-subtle local-model-toolbar">
+                <label>
+                  <span>搜索候选</span>
+                  <input id="local-model-search" placeholder="搜索模型名、版本名或平台" />
+                </label>
+                <label>
+                  <span>体量筛选</span>
+                  <select id="local-tier-filter">
+                    <option value="all">全部体量</option>
+                  </select>
+                </label>
+                <label>
+                  <span>部署状态</span>
+                  <select id="local-install-filter">
+                    <option value="all">全部状态</option>
+                    <option value="ready">已就绪</option>
+                    <option value="disabled">已停用</option>
+                    <option value="inactive">待下载</option>
+                    <option value="removed">已移除</option>
+                  </select>
+                </label>
+                <label>
+                  <span>机器适配</span>
+                  <select id="local-compat-filter">
+                    <option value="all">全部候选</option>
+                    <option value="allowed">当前可按需启用</option>
+                    <option value="recommended">当前推荐</option>
+                  </select>
+                </label>
+                <label>
+                  <span>部署形态</span>
+                  <select id="local-deploy-filter">
+                    <option value="all">全部形态</option>
+                    <option value="cpu">CPU 优先</option>
+                    <option value="gpu">GPU 友好</option>
+                    <option value="node">独立节点</option>
+                    <option value="cluster">集群级</option>
+                  </select>
+                </label>
+                <label>
+                  <span>候选焦点</span>
+                  <select id="local-focus-filter">
+                    <option value="all">全部候选</option>
+                    <option value="flagship">旗舰低限制</option>
+                    <option value="top-12">前 12 低限制</option>
+                    <option value="starter">入门优先</option>
+                  </select>
+                </label>
+                <label>
+                  <span>能力标签</span>
+                  <select id="local-capability-filter">
+                    <option value="all">全部标签</option>
+                    <option value="low-memory">低内存</option>
+                    <option value="reasoning">推理优先</option>
+                    <option value="long-context">长上下文</option>
+                    <option value="chinese">中文优先</option>
+                    <option value="multilingual">多语优先</option>
+                  </select>
+                </label>
+                <label>
+                  <span>排序方式</span>
+                  <select id="local-sort-filter">
+                    <option value="low-friction">低限制优先</option>
+                    <option value="size-asc">体量从小到大</option>
+                    <option value="size-desc">体量从大到小</option>
+                  </select>
+                </label>
+                <div class="actions local-toolbar-actions">
+                  <button type="button" class="ghost-button" id="reset-local-filters">重置筛选</button>
+                </div>
+              </div>
+              <div id="local-model-summary" class="selector-summary"></div>
+              <div id="model-packs" class="stack-list"></div>
+              <div class="panel-header compact">
+                <h2>智能建议</h2>
+              </div>
+              <div class="actions">
+                <button type="button" id="run-audit">查看系统体检</button>
+                <button type="button" id="build-advice">查看升级建议</button>
+              </div>
+              <div id="audit-report" class="detail-empty">系统体检结果待补充。</div>
+              <div id="advice-report" class="detail-empty">升级建议待补充。</div>
+            </section>
+          </div>
+
+          <div class="side-column">
+            <section class="panel">
+              <div class="panel-header compact">
+                <h2>任务详情</h2>
+              </div>
+              <div id="run-detail" class="detail-empty">选择一项任务后，可查看流程、阶段、验证与运行记录。</div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header compact">
+                <h2>开发工作台</h2>
+                <p>文件、终端与预览保持联动，作为任务开发模式的实时执行面板。</p>
+              </div>
+              <div id="dev-run-binding" class="panel-subtle compact-toolbar">当前未绑定任务，选择右侧任务后可把工作台动作写回任务轨迹。</div>
+              <div class="workbench-grid">
+                <div class="panel-subtle workbench-pane">
+                  <div class="list-row split-row">
+                    <strong>文件浏览器</strong>
+                    <button type="button" id="refresh-dev-files" class="ghost-button">刷新</button>
+                  </div>
+                  <div id="dev-files" class="stack-list dev-files"></div>
+                </div>
+                <div class="panel-subtle workbench-pane">
+                  <div class="list-row split-row">
+                    <strong>文件编辑器</strong>
+                    <span id="dev-editor-path" class="badge paused">未打开文件</span>
+                  </div>
+                  <textarea id="dev-editor" class="dev-editor" placeholder="选择文本文件后即可查看或编辑"></textarea>
+                  <div class="actions compact-actions">
+                    <button type="button" id="save-dev-file">保存</button>
+                    <button type="button" id="rollback-dev-file" class="ghost-button">回滚</button>
+                  </div>
+                </div>
+                <div class="panel-subtle workbench-pane span-2">
+                  <div class="list-row split-row">
+                    <strong>网页终端</strong>
+                    <span class="badge">轮询同步</span>
+                  </div>
+                  <div class="terminal-toolbar">
+                    <input id="dev-terminal-command" placeholder="例如：go test ./... 或 npm run dev" />
+                    <input id="dev-terminal-cwd" value="." placeholder="工作目录" />
+                    <button type="button" id="run-dev-command">前台执行</button>
+                    <button type="button" id="run-dev-command-bg" class="ghost-button">后台执行</button>
+                  </div>
+                  <pre id="dev-terminal-output" class="terminal-output">等待执行命令。</pre>
+                  <div id="dev-terminal-sessions" class="stack-list"></div>
+                </div>
+                <div class="panel-subtle workbench-pane span-2">
+                  <div class="list-row split-row">
+                    <strong>预览面板</strong>
+                    <span class="badge">端口代理</span>
+                  </div>
+                  <div class="terminal-toolbar">
+                    <input id="dev-preview-port" value="8080" placeholder="输入本地服务端口" />
+                    <button type="button" id="open-dev-preview">加载预览</button>
+                  </div>
+                  <iframe id="dev-preview-frame" class="dev-preview-frame" title="开发预览"></iframe>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header compact">
+                <h2>最新动态</h2>
+              </div>
+              <div id="event-log" class="event-log"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header compact">
+                <h2>系统概览</h2>
+              </div>
+              <div id="system-summary" class="detail-empty">正在整理当前系统概况。</div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+    <div id="model-modal" class="modal-shell hidden" aria-hidden="true">
+      <div class="modal-card">
+        <div class="list-row split-row modal-head">
+          <div>
+            <p class="modal-kicker">在线模型详情</p>
+            <h3 id="model-modal-title">模型详情</h3>
+          </div>
+          <button type="button" id="close-model-modal" class="ghost-button">关闭</button>
+        </div>
+        <div id="model-modal-body" class="stack-list"></div>
+      </div>
+    </div>
+    <script src="/app.js" defer></script>
+  </body>
+  </html>
