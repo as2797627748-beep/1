@@ -455,7 +455,7 @@ func TestDevFileReadWriteAndRollback(t *testing.T) {
 	server := New(platform)
 	filePath := "internal/httpapi/web/.test-dev-file.txt"
 	t.Cleanup(func() {
-		_ = os.Remove("/workspace/" + filePath)
+		_ = os.Remove(server.dev.root + "/" + filePath)
 	})
 
 	writeBody := bytes.NewBufferString(`{"path":"` + filePath + `","content":"first version"}`)
