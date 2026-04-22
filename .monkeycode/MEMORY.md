@@ -90,6 +90,13 @@ Agent 在任务执行过程中发现的条目应遵循以下格式：
   - 当前仓库没有 `package.json`，前端自动校验优先使用静态脚本语法检查，而不是 npm 安装与构建
   - CI 触发范围至少覆盖 `push` 和 `pull_request`，保证主分支和功能分支都能自动校验
 
+[开发工作区根目录约定]
+- Date: 2026-04-22
+- Context: Agent 在修复 GitHub Actions 中的开发接口测试失败时发现
+- Category: 环境配置
+- Instructions:
+  - `internal/httpapi.New()` 中的开发工作区根目录不能硬编码 `/workspace`，应优先使用运行时当前工作目录，保证本地和 CI 都能正常访问开发文件接口
+
 [12 步闭环阶段骨架落点]
 - Date: 2026-04-22
 - Context: Agent 在执行统一闭环骨架改造时发现

@@ -8,6 +8,7 @@ import (
 	"io"
 	"mime"
 	"net/http"
+	"os"
 	"path"
 	"strings"
 
@@ -25,7 +26,11 @@ type Server struct {
 }
 
 func New(platform *service.Platform) *Server {
-	s := &Server{platform: platform, dev: newDevWorkspace("/workspace"), mux: http.NewServeMux()}
+	root := "/workspace"
+	if cwd, err := os.Getwd(); err == nil && strings.TrimSpace(cwd) != "" {
+		root = cwd
+	}
+	s := &Server{platform: platform, dev: newDevWorkspace(root), mux: http.NewServeMux()}
 	s.routes()
 	return s
 }
